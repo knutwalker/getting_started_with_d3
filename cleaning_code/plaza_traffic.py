@@ -18,7 +18,7 @@ mean_cash = df.groupby("PLAZAID")['CASH'].aggregate(np.mean)
 mean_etc = df.groupby("PLAZAID")['ETC'].aggregate(np.mean)
 
 # build the key
-key = { 
+key = {
     1 : "Robert F. Kennedy Bridge Bronx Plaza",
     2 : "Robert F. Kennedy Bridge Manhattan Plaza",
     3 : "Bronx-Whitestone Bridge",
@@ -32,17 +32,17 @@ key = {
 }
 # output to JSON we can use in d3
 cash =  [
-    {"id":d[0], "count":d[1], "name":key[d[0]]} 
+    {"id":d[0], "count":d[1], "name":key[d[0]]}
     for d in mean_cash.to_dict().items()
 ]
 electronic = [
-    {"id":d[0], "count":d[1], "name":key[d[0]]} 
+    {"id":d[0], "count":d[1], "name":key[d[0]]}
     for d in mean_etc.to_dict().items()
 ]
 
 out = {
-    "cash": cash, 
-    "electronic": electronic 
+    "cash": cash,
+    "electronic": electronic
 }
 
 json.dump(out, open('../viz/data/plaza_traffic.json', 'w'))
