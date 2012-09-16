@@ -45,4 +45,4 @@ out = {
     "electronic": electronic
 }
 
-json.dump(out, open('../viz/data/plaza_traffic.json', 'w'))
+json.dump(out, open('../visualisations/data/plaza_traffic.json', 'w'))
