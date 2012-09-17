@@ -43,4 +43,4 @@ for xi,yi,ci in zip(x,y,c):
         "customer_accident_rate": ci
     })
 
-json.dump(out, open("../viz/data/bus_perf.json",'w'))
+json.dump(out, open("../visualisations/data/bus_perf.json",'w'))
