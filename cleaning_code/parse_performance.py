@@ -1,46 +1,40 @@
-import xml.dom.minidom
 import json
-dom = xml.dom.minidom.parse('Performance_MTABUS.xml')
-indicators = dom.documentElement.getElementsByTagName('INDICATOR')
+import xmltodict
 
-pull = {
-    'x':'Mean Distance Between Failures - MTA Bus',
-    'y':'Collisions with Injury Rate - MTA Bus',
-    'c':'Customer Accident Injury Rate - MTA Bus'
-}
+d = xmltodict.parse(open('Performance_MTABUS.xml'))
 
 x = []
 y = []
 c = []
 
-for indicator in indicators:
-    try:
-        name = indicator.getElementsByTagName('INDICATOR_NAME')[0].childNodes[0].data
-        actual = indicator.getElementsByTagName('MONTHLY_ACTUAL')[0].childNodes[0].data
-        actual = float(''.join(actual.split(',')))
-    except IndexError:
-        actual = None    
-    
-    if actual == 0.0:
-        actual = None
-    
-    if name == pull['x']:
-        x.append(actual)
-    elif name == pull['y']:
-        y.append(actual)
-    elif name == pull['c']:
-        c.append(actual)
+pull = {
+    u'Mean Distance Between Failures - MTA Bus': x,
+    u'Collisions with Injury Rate - MTA Bus': y,
+    u'Customer Accident Injury Rate - MTA Bus': c
+}
+
+push = (
+    "dist_between_fail",
+    "collision_with_injury",
+    "customer_accident_rate"
+)
+
+for indicator in d['PERFORMANCE']['INDICATOR']:
+    name = indicator['INDICATOR_NAME']
+    actual = indicator.get('MONTHLY_ACTUAL')
+    actual = float(''.join((actual or '0').split(',')))
+
+    pull.get(name, []).append(actual or None)
 
 out = []
-
-for xi,yi,ci in zip(x,y,c):
-    if xi is None or yi is None or ci is None:
+for z in zip(x, y, c):
+    if not all(z):
         continue
 
     out.append({
-        "dist_between_fail": xi,
-        "collision_with_injury": yi,
-        "customer_accident_rate": ci
+        "dist_between_fail": z[0],
+        "collision_with_injury": z[1],
+        "customer_accident_rate": z[2]
     })
 
 json.dump(out, open("../visualisations/data/bus_perf.json",'w'))
